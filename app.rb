@@ -50,4 +50,23 @@ db = PG::Connection.new(
     json result.map { |record| { id: record['id'], name: record['name'], description: record['profession'] } }
   end
 
+  get '/records/:id' do
+    sql = "SELECT * FROM records WHERE id = $1"
+    result = db.exec(sql, [params[:id]])
+    json result.first.to_h
+  end
+
+  put '/records/:id' do
+    sql = "UPDATE records SET name=$2, profession=$3 WHERE id=$1 RETURNING id, name, profession"
+    result = db.exec(sql, [params[:id], params[:name], params[:profession]])
+    json result.first.to_h
+  end
+
+  delete '/records/:id' do
+    sql = "DELETE FROM records WHERE id=$1"
+    result = db.exec(sql, [params[:id]])
+    json "Records deleted"
+  end  
+
+
 end  
